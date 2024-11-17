@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace IoC_Container
 {
-    public enum Lifetime
+    internal class Rice : IFood
     {
-        Singleton,
-        Transient
+        public override string type { get; set; } = "米";
     }
 }

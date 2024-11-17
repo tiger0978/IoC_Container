@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace IoC_Container
 {
-    public enum Lifetime
+    public abstract class IFood
     {
-        Singleton,
-        Transient
+        public abstract string type { get; set; }
+        public IFood() { }
     }
 }

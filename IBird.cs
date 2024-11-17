@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace IoC_Container
 {
-    public enum Lifetime
+    internal interface IBird
     {
-        Singleton,
-        Transient
+        string color { get; set; }
+        void EAT();
     }
 }
