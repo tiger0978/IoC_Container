@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace IoC_Container
 {
-    public class ServiceDescriptor
+    public class ServiceDescriptor_test
     {
-        public ServiceDescriptor(Lifetime lifetime, Type instance, Func<ServiceProvider, object> func = null) 
+        public ServiceDescriptor_test(Lifetime lifetime, Type instance, Func<ServiceProvider, object> func = null) 
         {
             this.lifetime = lifetime;
             this.instance = instance;

@@ -12,37 +12,49 @@ namespace IoC_Container
     {
         public Dictionary<string, ServiceDescriptor> dict = new Dictionary<string, ServiceDescriptor>();
 
-        public int Count => throw new NotImplementedException();
+        public int Count => dict.Count;
+        
 
         public bool IsReadOnly => throw new NotImplementedException();
 
-        public Microsoft.Extensions.DependencyInjection.ServiceDescriptor this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
+        public ServiceDescriptor this[int index]
+        {
+            get
+            {
+                return dict.Values.ElementAt(index);
+            }
+            set
+            {
+                var key = dict.Keys.ElementAt(index);
+                dict[key] = value;
+            }
+        }
         public ServiceCollection AddTransient<T, T1>() 
         {
-            ServiceDescriptor descriptor = new ServiceDescriptor(Lifetime.Transient, typeof(T1));
-            dict.Add(typeof(T).Name, descriptor);
+            ServiceDescriptor descriptor = new ServiceDescriptor(typeof(T), typeof(T1), ServiceLifetime.Transient);
+            Add(descriptor);
             return this;
         }
 
-        public ServiceCollection AddTransient<T>(Func<ServiceProvider,object> func)
+        public ServiceCollection AddTransient<T>(Func<IServiceProvider,object> func)
         {
-            ServiceDescriptor descriptor = new ServiceDescriptor(Lifetime.Transient, typeof(T), func);
-            dict.Add(typeof(T).Name, descriptor);
+            ServiceDescriptor descriptor = new ServiceDescriptor(typeof(T), func, ServiceLifetime.Transient);
+            Add(descriptor);
             return this;
         }
 
         public ServiceCollection AddSingleton<T, T1>()
         {
-            ServiceDescriptor descriptor = new ServiceDescriptor(Lifetime.Singleton, typeof(T1));
-            dict.Add(typeof(T).Name, descriptor);
+
+            ServiceDescriptor descriptor = new ServiceDescriptor(typeof(T), typeof(T1), ServiceLifetime.Singleton);
+            Add(descriptor);
             return this;
         }
 
-        public ServiceCollection AddSingleton<T>(Func<ServiceProvider,object> func)
+        public ServiceCollection AddSingleton<T>(Func<IServiceProvider,object> func)
         {
-            ServiceDescriptor descriptor = new ServiceDescriptor(Lifetime.Singleton, typeof(T), func);
-            dict.Add(typeof(T).Name, descriptor);
+            ServiceDescriptor descriptor = new ServiceDescriptor(typeof(T), func, ServiceLifetime.Singleton);
+            Add(descriptor);
             return this;
         }
 
@@ -51,12 +63,12 @@ namespace IoC_Container
             return new ServiceProvider(this);
         }
 
-        public int IndexOf(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+        public int IndexOf(ServiceDescriptor item)
         {
             throw new NotImplementedException();
         }
 
-        public void Insert(int index, Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+        public void Insert(int index, ServiceDescriptor item)
         {
             throw new NotImplementedException();
         }
@@ -66,9 +78,16 @@ namespace IoC_Container
             throw new NotImplementedException();
         }
 
-        public void Add(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+        public void Add(ServiceDescriptor item)
         {
-            throw new NotImplementedException();
+            if (!dict.ContainsKey(item.ServiceType.FullName))
+            {
+                dict.Add(item.ServiceType.FullName, item);
+            }
+            else
+            {
+                dict[item.ServiceType.FullName] = item;
+            }
         }
 
         public void Clear()
@@ -76,22 +95,22 @@ namespace IoC_Container
             throw new NotImplementedException();
         }
 
-        public bool Contains(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+        public bool Contains(ServiceDescriptor item)
         {
             throw new NotImplementedException();
         }
 
-        public void CopyTo(Microsoft.Extensions.DependencyInjection.ServiceDescriptor[] array, int arrayIndex)
+        public void CopyTo(ServiceDescriptor[] array, int arrayIndex)
         {
             throw new NotImplementedException();
         }
 
-        public bool Remove(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+        public bool Remove(ServiceDescriptor item)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerator<Microsoft.Extensions.DependencyInjection.ServiceDescriptor> GetEnumerator()
+        public IEnumerator<ServiceDescriptor> GetEnumerator()
         {
             throw new NotImplementedException();
         }
