@@ -17,6 +17,7 @@ namespace IoC_Container
             services.AddSingleton<IBird, Eagle>();
             services.AddTransient<IFood, Rice>();
 
+            services.AddSingleton<IBird, Sparrow>();
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(System.IO.Directory
@@ -27,9 +28,8 @@ namespace IoC_Container
             services.AddLogging(LoggingBuilder => LoggingBuilder.AddNLog(config));
 
             var provides = services.BuildServiceProvider();
-            var bird = provides.GetService<IBird>();
-            bird.EAT();
-            bird.color = "White";
+            var bird = provides.GetService<IEnumerable<IBird>>();
+
 
             //services.AddTransient<生肖, 生肖>();
             //var provides = services.BuildServiceProvider();

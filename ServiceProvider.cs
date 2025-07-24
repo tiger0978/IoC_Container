@@ -12,8 +12,8 @@ namespace IoC_Container
 {
     public class ServiceProvider : IServiceProvider
     {
-        private ServiceCollection _services;
-        private Dictionary<string, object> _tempInstances = new Dictionary<string, object>();
+        public ServiceCollection _services;
+        private Dictionary<ServiceDescriptor, object> _tempInstances = new Dictionary<ServiceDescriptor, object>();
         public ServiceProvider(ServiceCollection serviceCollection) 
         {
             _services = serviceCollection;
@@ -24,15 +24,15 @@ namespace IoC_Container
 
             var dict = _services.dict;
             //如果serviceType是可以直接從dict找到，代表是有註冊在容器中一般類型
-            if(dict.TryGetValue(serviceType.FullName, out ServiceDescriptor descriptor))
+            if(dict.TryGetValue(serviceType.FullName, out List<ServiceDescriptor> descriptors))
             {
-                return GetImplementationInstance(descriptor);
+                return GetImplementationInstance(descriptors.LastOrDefault());
             }
 
             //如果他是IEnumerable<T>
             if (CheckIsIEnumerableType(serviceType))
             {
-                var listInstance = GetGenericIListInstance(serviceType);
+                var listInstance = GetGenericIListInstance(serviceType); // serviceType => IEnumerable<T>
                 return listInstance;
             }
 
@@ -40,9 +40,9 @@ namespace IoC_Container
             if (serviceType.IsGenericType)
             {
                 Type type = serviceType.GetGenericTypeDefinition();
-                if (_services.dict.TryGetValue(type.FullName, out ServiceDescriptor genericServiceDescriptor))
+                if (_services.dict.TryGetValue(type.FullName, out List<ServiceDescriptor> genericServiceDescriptors))
                 {
-                    var serviceDescriptor = CreateGenericServiceDescriptor(serviceType, genericServiceDescriptor);
+                    var serviceDescriptor = CreateGenericServiceDescriptor(serviceType, genericServiceDescriptors.LastOrDefault());
                     return GetImplementationInstance(serviceDescriptor);
                 }
             }
@@ -57,15 +57,18 @@ namespace IoC_Container
             }
             return false;
         }
-        private IList GetGenericIListInstance(Type serviceType)
+        private IList GetGenericIListInstance(Type IenumerableType)  //ienumerber<T>
         {
-            var genericArgument = serviceType.GetGenericArguments()[0];
-            object genericInstance = GetService(genericArgument);
-            if (genericInstance == null)
-                return null;
-
-            var genericList = CreateList(genericInstance.GetType());
-            genericList.Add(genericInstance);
+            var genericArgument = IenumerableType.GetGenericArguments()[0]; 
+            IList genericList = CreateList(genericArgument);                       // 先找到 T 實體為何並建立起 IList
+            if(_services.dict.TryGetValue(genericArgument.FullName, out List<ServiceDescriptor> descriptors)) //利用剛剛找到的T實體去dict找資料
+            {
+                foreach (var serviceDescriptor in descriptors)
+                {
+                    object genericInstance = GetImplementationInstance(serviceDescriptor);
+                    genericList.Add(genericInstance);
+                }
+            }
             return genericList;
         }
 
@@ -93,7 +96,7 @@ namespace IoC_Container
             if (serviceDescriptor.ImplementationInstance != null)
                 return serviceDescriptor.ImplementationInstance;
 
-            string keyName = serviceDescriptor.ServiceType.Name;
+            //string keyName = serviceDescriptor.ServiceType.Name;
             object instance = default;
             if (serviceDescriptor.Lifetime == ServiceLifetime.Transient)
             {
@@ -107,19 +110,19 @@ namespace IoC_Container
             }
             else if (serviceDescriptor.Lifetime == ServiceLifetime.Singleton)
             {
-                if (_tempInstances.TryGetValue(keyName, out instance))
+                if (_tempInstances.TryGetValue(serviceDescriptor, out instance))
                 {
                     return instance;
                 }
                 if (serviceDescriptor.ImplementationFactory != null)
                 {
                     instance = serviceDescriptor.ImplementationFactory.Invoke(this);
-                    _tempInstances[keyName] = instance;
+                    _tempInstances[serviceDescriptor] = instance;
                     return instance;
                 }
 
                 instance = CreateInstance(serviceDescriptor.ImplementationType);
-                _tempInstances[keyName] = instance;
+                _tempInstances[serviceDescriptor] = instance;
             }
             return instance;
         }

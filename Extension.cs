@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IoC_Container
 {
-    internal static class Extension
+    public static class Extension
     {
         public static T GetService<T>(this IServiceProvider provider)
         {

@@ -9,6 +9,7 @@ namespace IoC_Container
     internal interface IBird
     {
         string color { get; set; }
+        string name { get; set; }
         void EAT();
     }
 }

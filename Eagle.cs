@@ -12,6 +12,7 @@ namespace IoC_Container
     {
         private IFood food {  get; set; }
         private ILogger<Eagle> logger { get; set; }
+        
         public Eagle(IFood food, ILogger<Eagle> logger)
         {
             this.logger = logger;
@@ -24,5 +25,6 @@ namespace IoC_Container
             logger.Log(LogLevel.Information, "老鷹吃米");
         }
         public string color { get; set; } = "Brown";
+        public string name { get; set; } = "Eagle";
     }
 }
