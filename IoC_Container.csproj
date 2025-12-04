@@ -136,12 +136,14 @@
   <ItemGroup>
     <Compile Include="Attributes\SingletonAttribute.cs" />
     <Compile Include="Attributes\TransientAttribute.cs" />
+    <Compile Include="ComponentFactory.cs" />
     <Compile Include="Eagle.cs" />
     <Compile Include="Extension.cs" />
     <Compile Include="IBird.cs" />
+    <Compile Include="Interface\IComponentFactory.cs" />
     <Compile Include="IFood.cs" />
-    <Compile Include="IPresenterFactory.cs" />
-    <Compile Include="Lifetime.cs" />
+    <Compile Include="Interface\IPresenterFactory.cs" />
+    <Compile Include="Enums\Lifetime.cs" />
     <Compile Include="PresenterFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

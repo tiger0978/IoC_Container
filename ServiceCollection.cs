@@ -19,6 +19,7 @@ namespace IoC_Container
         public ServiceCollection()
         {
             AddSingleton<IPresenterFactory, PresenterFactory>();
+            AddSingleton<IComponentFactory, ComponentFactory>();
         }
 
         public bool IsReadOnly => throw new NotImplementedException();
